@@ -21,11 +21,12 @@ const mOver = require('method-override');
 
 ////////////////// DATABASE CONNECTION ////////////////////
 
+const db = require('./config/db');
 // MAP Global Promise get rid of the warnning
 mongoose.Promise = global.Promise;
 
 // Connecting to the mongoose databse
-mongoose.connect('mongodb://127.0.0.1:27017/vidjot-dev', {
+mongoose.connect(db.mongoURI, {
   //useMongoClient:true
 })
 // Promise in return
@@ -71,6 +72,11 @@ app.use(session({
   saveUninitialized: true
 }));
 
+//  Passport Session Initialization Middleware
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Flash Middleware
 app.use(flash());
 
@@ -79,8 +85,9 @@ app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
+  res.locals.user = req.user || null;
   next();
-})
+});
 
 
 /////////////////  ROUTES     ////////////////////
@@ -91,6 +98,8 @@ app.get('/', (req, res) => {
     title: title
   });
 });
+
+
 
 // About Route
 app.get('/about', (req, res) => {
@@ -109,7 +118,7 @@ app.use('/users', users);
 
 /////////////////  PORT INITALIZATION     ////////////////////
 // Defining the PORT
-const port = 5000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server Started on PORT ${port}`);
 });

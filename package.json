@@ -4,7 +4,7 @@
   "description": "Learning Project of NODE JS and Express with MONGODB",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
   },
   "author": "Nandymandy",
   "license": "MIT",
