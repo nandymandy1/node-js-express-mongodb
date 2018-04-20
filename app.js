@@ -2,10 +2,14 @@
 const express = require('express');
 // Bring the handle bars module
 const exphbs  = require('express-handlebars');
+// Path modukle
+const path = require('path');
 // Bring in the mongoose
 const mongoose = require('mongoose');
 // To get the form data with the help of body parser
 const bodyParser = require('body-parser');
+// Bring In passport
+const passport = require('passport');
 // Initializing the Express server
 const app = express();
 // Flash Session
@@ -14,10 +18,6 @@ const flash = require('connect-flash');
 const session = require('express-session');
 // Bring in the mthod-overider
 const mOver = require('method-override');
-
-////////////////// PACKAGES ////////////////////
-
-
 
 ////////////////// DATABASE CONNECTION ////////////////////
 
@@ -34,15 +34,15 @@ mongoose.connect('mongodb://127.0.0.1:27017/vidjot-dev', {
 }).catch(err => console.log(err));
 
 
-
-////////////////// MODELS ////////////////////
-
 ////////////////// LOAD ROUTES  //////////////
 // Load Ideas Routes
 const ideas = require('./routes/ideas');
 
-////////////////// LOAD ROUTES  //////////////
+// Load User Authentication Routes
+const users = require('./routes/users');
 
+// Passport Config
+require('./config/passport')(passport);
 
 ////////////////// MIDDLEWARES ////////////////////
 
@@ -57,11 +57,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(bodyParser.json())
 
-/* How middleware works
-app.use((req, res, next) => {
-  next();
-});
-*/
+
+// Static Folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Method overider middleware
 app.use(mOver('_method'));
@@ -83,8 +81,6 @@ app.use((req, res, next) => {
   res.locals.error = req.flash('error');
   next();
 })
-////////////////// MIDDLEWARES ////////////////////
-
 
 
 /////////////////  ROUTES     ////////////////////
@@ -101,21 +97,15 @@ app.get('/about', (req, res) => {
   res.render('about');
 });
 
-// LOGIN ROUTE
-app.get('/user/login', (req, res) => {
-  res.send('login');
-});
 
-/// User Registration
-app.get('/user/register', (req, res) => {
-  res.send('register');
-});
 
-// USE Routes
+// USE Routes Registering IDEAS
 app.use('/ideas', ideas);
 
+// Registering Users Routes
+app.use('/users', users);
 
-/////////////////  ROUTES     ////////////////////
+
 
 /////////////////  PORT INITALIZATION     ////////////////////
 // Defining the PORT
@@ -123,4 +113,3 @@ const port = 5000;
 app.listen(port, () => {
   console.log(`Server Started on PORT ${port}`);
 });
-/////////////////  PORT INITALIZATION     ////////////////////

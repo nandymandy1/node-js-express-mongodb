@@ -2,14 +2,16 @@ const express = require('express');
 const router = express.Router();
 // Bring in the mongoose
 const mongoose = require('mongoose');
-// Ideas Page Route
+
+
+
 
 // Loading Idea Schema to use in the app
 require('../models/Idea');
 const Idea = mongoose.model('ideas');
 
 
-
+// Ideas Page Route
 router.get('/', (req, res) => {
   // fetching the ideas from the database and show it o this page
   Idea.find({})
